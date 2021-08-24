@@ -21,13 +21,13 @@ class DataCorrelation:
     def correlationmatrix(self):
         column_names = self.copy.column
         for  i in column_names:
-                for  j in column_names:
-                    if i == j:
-                            pass
-                    else:
-                        corr = self.df[i].corr(self.data[j])
-                        if (corr>=0.5 or corr<=-0.5):
-                                print(corr)
-                                if (i not in self.high_corr.keys()):
-                                    self.high_corr[i] = []
-                                self.high_corr[i].append(j)
+            for  j in column_names:
+                if i == j:
+                    pass
+                else:
+                    corr = self.df[i].corr(self.data[j])
+                    if (corr>=0.5 or corr<=-0.5):
+                        print(corr)
+                        if (i not in self.high_corr.keys()):
+                            self.high_corr[i] = []
+                        self.high_corr[i].append(j)

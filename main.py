@@ -1,8 +1,6 @@
 import pandas as pd
-
+from datacorrelation import DataCorrelation
 data  = pd.read_csv("/Users/williammckeon/Sync/youtube videos/dataanalysis/housing.csv")
 
-corr = data.corr()
-
-# print(data.columns)
-print(corr["median_house_value"].sort_values(ascending=False))
+new_data = DataCorrelation(df = data)
+new_data.correlationmatrix()

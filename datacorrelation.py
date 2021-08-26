@@ -113,6 +113,7 @@ class DataCorrelation:
                 self.copy[name_of_new_column]= self.copy[column[numerator]]/self.copy[column[denominator]]
                 self.copy.drop(columns=column[numerator],inplace=True)
                 self.copy.drop(columns = column[denominator],inplace=True)
+                print(self.copy.columns)
                 choice = input("enter q if that is all the columns you would like to combine")
             choice = input("enter yes if you would like to view the new correlation matrix scores")
             if (choice.upper()=="YES"):

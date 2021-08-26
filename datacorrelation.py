@@ -1,5 +1,10 @@
 import pandas as pd
+from pandas.plotting import scatter_matrix
 from datavisulization import DataVisulization
+import matplotlib.pyplot as plt
+from PyQt5 import QtWidgets
+import math
+import sys
 class DataCorrelation:
     def __init__(self,df):
         self.df = df
@@ -21,7 +26,14 @@ class DataCorrelation:
                     copy.drop(columns= i, inplace=True)
                 count+=1
         return (copy)
-    def correlationmatrix(self):
+    def FindingScreenSize_(self):
+        app = QtWidgets.QApplication(sys.argv)
+        screen = app.primaryScreen()
+        size = screen.size()
+        Screensize = (size.width()/96-2, size.height()/96-2)
+        return Screensize
+
+    def Correlationmatrix(self):
         column_names = self.copy.columns
         for  i in column_names:
             for  j in column_names:
@@ -29,7 +41,7 @@ class DataCorrelation:
                     pass
                 else:
                     # print(j)
-                    corr = self.df[i].corr(self.df[j])
+                    corr = self.copy[i].corr(self.copy[j])
                     if (corr>=0.5 or corr<=-0.5):
                         # print(corr)
                         if (i not in self.high_corr.keys()):
@@ -41,4 +53,72 @@ class DataCorrelation:
         for i in self.high_corr.keys():
             print(f"{count}:{i},{self.high_corr[i]}")
             count += 1
+    def LookingAtCorr(self):
+        print("with the values you see up above do you with to see a a scatter matrix of them")
+        choice = input("enter yes if you do")
+        if choice.upper() == "YES":
 
+            column = []
+            matrix = []
+            for i in self.copy.columns:
+                column.append(i)
+            print(column)
+            while (choice.upper()!="Q"):
+                count = 0
+                for i in column:
+                    print(f"{count}:{i}")
+                    count+=1
+                try:
+                    index = int(input("enter the corresponding number of each column that you would like to see"))
+                except:
+                    print("seems you picked an option that was not available")
+                matrix.append(column[index])
+                choice = input("enter q to view the scatter matrix")
+                column.pop(index)
+            scatter_matrix(self.copy[matrix],figsize=self.FindingScreenSize_())
+            plt.show()
+    def combine(self):
+        copy_of_copy = self.copy.copy()
+        choice = input("enter yes to combine some of the columns")
+        if (choice.upper() == "YES"):
+            column = []
+            for i in self.copy.columns:
+                column.append(i)
+            while(choice.upper()!="Q"):
+                count = 0
+                for  i in column:
+                    print(f"{count}:{i}")
+                    count+=1
+                while (True):
+                    try:
+                        numerator = int(input("enter the number of the corresponding column you would like to be the numerator to be"))
+                        if (numerator<= len(column)):
+                            column.pop(numerator)
+                            break
+                        else:
+                            print("please enter of of the numbers you see on the screen")
+                    except ValueError:
+                        print("please enter a number")
+                while (True):
+                    try:
+                        denominator = int(input("enter the number of the corresponding column you would like to be the denominator to be"))
+                        if (denominator<= len(column)):
+                            column.pop(denominator)
+                            break
+                        else:
+                            print("please enter of of the numbers you see on the screen")
+                    except ValueError:
+                        print("please enter a number")
+                name_of_new_column = input("enter what you would like the new name of the column to be")
+                self.copy[name_of_new_column]= self.copy[column[numerator]]/self.copy[column[denominator]]
+                self.copy.drop(columns=column[numerator],inplace=True)
+                self.copy.drop(columns = column[denominator],inplace=True)
+                choice = input("enter q if that is all the columns you would like to combine")
+            choice = input("enter yes if you would like to view the new correlation matrix scores")
+            if (choice.upper()=="YES"):
+                self.Correlationmatrix()
+                print("what do you think of those scores?")
+                choice = input("enter yes if you would like to keep these new scores"
+                               " or enter nothing to revert them back to the original")
+                if (choice.upper()!="YES"):
+                    self.copy = copy_of_copy

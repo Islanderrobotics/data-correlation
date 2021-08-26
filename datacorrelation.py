@@ -3,7 +3,6 @@ from pandas.plotting import scatter_matrix
 from datavisulization import DataVisulization
 import matplotlib.pyplot as plt
 from PyQt5 import QtWidgets
-import math
 import sys
 class DataCorrelation:
     def __init__(self,df):
@@ -34,9 +33,9 @@ class DataCorrelation:
         return Screensize
 
     def Correlationmatrix(self):
-        column_names = self.copy.columns
-        for  i in column_names:
-            for  j in column_names:
+
+        for  i in self.copy.columns:
+            for  j in self.copy.columns:
                 if i == j:
                     pass
                 else:
@@ -53,6 +52,7 @@ class DataCorrelation:
         for i in self.high_corr.keys():
             print(f"{count}:{i},{self.high_corr[i]}")
             count += 1
+
     def LookingAtCorr(self):
         print("with the values you see up above do you with to see a a scatter matrix of them")
         choice = input("enter yes if you do")
@@ -77,8 +77,17 @@ class DataCorrelation:
                 column.pop(index)
             scatter_matrix(self.copy[matrix],figsize=self.FindingScreenSize_())
             plt.show()
+        choice = input("enter yes if there is a plot you would like to view in more depth")
+        if (choice.upper()=="YES"):
+            for i in self.copy.columns:
+                print(i)
+            x = input("enter the name of the column you would like to be on the x axis")
+            y = input("enter the name of the column you would like to be on the y axis")
+            single_plot =DataVisulization(data = self.copy, type_of_plot="scatter",column_values_for_x=x,column_values_for_y=y)
+            single_plot.driver()
     def combine(self):
         copy_of_copy = self.copy.copy()
+        drop = []
         choice = input("enter yes to combine some of the columns")
         if (choice.upper() == "YES"):
             column = []
@@ -93,7 +102,7 @@ class DataCorrelation:
                     try:
                         numerator = int(input("enter the number of the corresponding column you would like to be the numerator to be"))
                         if (numerator<= len(column)):
-                            column.pop(numerator)
+
                             break
                         else:
                             print("please enter of of the numbers you see on the screen")
@@ -103,7 +112,7 @@ class DataCorrelation:
                     try:
                         denominator = int(input("enter the number of the corresponding column you would like to be the denominator to be"))
                         if (denominator<= len(column)):
-                            column.pop(denominator)
+
                             break
                         else:
                             print("please enter of of the numbers you see on the screen")
@@ -111,12 +120,15 @@ class DataCorrelation:
                         print("please enter a number")
                 name_of_new_column = input("enter what you would like the new name of the column to be")
                 self.copy[name_of_new_column]= self.copy[column[numerator]]/self.copy[column[denominator]]
-                self.copy.drop(columns=column[numerator],inplace=True)
-                self.copy.drop(columns = column[denominator],inplace=True)
-                print(self.copy.columns)
+                drop.append(column[numerator])
+                drop.append(column[denominator])
                 choice = input("enter q if that is all the columns you would like to combine")
+            self.copy.drop(columns= drop, inplace=True)
+            # print(self.copy.columns)
             choice = input("enter yes if you would like to view the new correlation matrix scores")
             if (choice.upper()=="YES"):
+                self.high_corr.clear()
+                self.corr.clear()
                 self.Correlationmatrix()
                 print("what do you think of those scores?")
                 choice = input("enter yes if you would like to keep these new scores"

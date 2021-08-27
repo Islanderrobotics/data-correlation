@@ -1,37 +1,29 @@
-import pandas as pd
 from pandas.plotting import scatter_matrix
-from datavisulization import DataVisulization
 import matplotlib.pyplot as plt
 from PyQt5 import QtWidgets
 import sys
+from datavisulization import DataVisulization
+
 class DataCorrelation:
     def __init__(self,df):
         self.df = df
-
-        self.copy=self.ByeByeText(df)
+        self.copy = self.ByeByeText(self.df)
         self.high_corr = {}
-        self.corr= []
+        self.corr = []
+
     def ByeByeText(self,df):
         copy = df.copy()
-        count= 0
-        varlist = df.columns
-        if (isinstance(varlist,str)):
-            if(copy[varlist].dtype == "object"):
-                print("that will cause an error")
-        else:
-            for i in varlist:
-                if (copy[i].dtype == "object"):
 
-                    copy.drop(columns= i, inplace=True)
-                count+=1
+        for  i in copy.columns:
+            if (copy[i].dtype == "object"):
+                copy.drop(columns = i, inplace=True)
         return (copy)
     def FindingScreenSize_(self):
         app = QtWidgets.QApplication(sys.argv)
         screen = app.primaryScreen()
         size = screen.size()
-        Screensize = (size.width()/96-2, size.height()/96-2)
-        return Screensize
-
+        screensize = (size.width()/95-2, size.height()/96-2)
+        return screensize
     def Correlationmatrix(self):
 
         for  i in self.copy.columns:
@@ -52,7 +44,6 @@ class DataCorrelation:
         for i in self.high_corr.keys():
             print(f"{count}:{i},{self.high_corr[i]}")
             count += 1
-
     def LookingAtCorr(self):
         print("with the values you see up above do you with to see a a scatter matrix of them")
         choice = input("enter yes if you do")
@@ -135,3 +126,5 @@ class DataCorrelation:
                                " or enter nothing to revert them back to the original")
                 if (choice.upper()!="YES"):
                     self.copy = copy_of_copy
+                elif(choice.upper()=="YES"):
+                    self.df = self.copy
